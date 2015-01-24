@@ -20,18 +20,23 @@ func rootHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func resultsHandler(writer http.ResponseWriter, request *http.Request) {
-	token, err := channels.OpenNewChannel(request);
+	if request.FormValue("lat") == "" || request.FormValue("lng") == ""	{
+		rootHandler(writer, request)
+		return
+	}
+	token, channelIdentifer, err := channels.OpenNewChannel(request);
 	log.Print(token)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	params := map[string]string{"token":token}
+	params := map[string]string{"token":token,"channelId":channelIdentifer}
 	parseTemplate("results", params, writer, request)
 }
 
 func testChannelHandler(writer http.ResponseWriter, request *http.Request) {
-	channels.SendToChannel(request);
+	channelIdentifier := request.FormValue("cid")
+	channels.SendToChannel(channelIdentifier, request);
 }
 
 func parseTemplate(templateName string, params map[string]string, writer http.ResponseWriter, request *http.Request) {

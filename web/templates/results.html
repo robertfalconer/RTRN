@@ -4,6 +4,7 @@
     </head>
     <body>
     <h1>Results</h1>
+    <p>{{.channelId}}</p>
     <script>
         channel = new goog.appengine.Channel('{{.token}}');
         socket = channel.open();
