@@ -1,16 +1,16 @@
 package channels
 
 import (
-	"log"
-	"strconv"
 	"appengine"
 	"appengine/channel"
 	"appengine/datastore"
+	"log"
 	"net/http"
+	"strconv"
 )
 
 type Channel struct {
-	Location appengine.GeoPoint
+	Location       appengine.GeoPoint
 	SubscriptionID int
 }
 
@@ -29,21 +29,23 @@ func OpenNewChannel(request *http.Request) (string, string, error) {
 	return token, savedKeyString, err
 }
 
-func SendToChannel(channelIdentifier string, request *http.Request) (error) {
+func SendToChannel(channelIdentifier string, request *http.Request) error {
 	context := appengine.NewContext(request)
 	err := channel.SendJSON(context, channelIdentifier, []string{"Stuff", "Things"})
 	return err
 }
 
-func ParseRequestToChannel(request *http.Request) (*Channel) {
+func ParseRequestToChannel(request *http.Request) *Channel {
 	lat, _ := strconv.ParseFloat(request.FormValue("lat"), 32)
 	lng, _ := strconv.ParseFloat(request.FormValue("lng"), 32)
 
 	location := appengine.GeoPoint{
 		Lat: lat,
-		Lng: lng }
-	channel := &Channel {
-		Location: location }
+		Lng: lng,
+	}
+	channel := &Channel{
+		Location: location,
+	}
 	return channel
 }
 

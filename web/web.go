@@ -1,10 +1,10 @@
 package web
 
 import (
+	"channels"
+	"html/template"
 	"log"
 	"net/http"
-	"html/template"
-	"channels"
 )
 
 func init() {
@@ -14,29 +14,29 @@ func init() {
 }
 
 func rootHandler(writer http.ResponseWriter, request *http.Request) {
-	params := map[string]string{"":""}
+	params := map[string]string{"": ""}
 
 	parseTemplate("search", params, writer, request)
 }
 
 func resultsHandler(writer http.ResponseWriter, request *http.Request) {
-	if request.FormValue("lat") == "" || request.FormValue("lng") == ""	{
+	if request.FormValue("lat") == "" || request.FormValue("lng") == "" {
 		rootHandler(writer, request)
 		return
 	}
-	token, channelIdentifer, err := channels.OpenNewChannel(request);
+	token, channelIdentifer, err := channels.OpenNewChannel(request)
 	log.Print(token)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	params := map[string]string{"token":token,"channelId":channelIdentifer}
+	params := map[string]string{"token": token, "channelId": channelIdentifer}
 	parseTemplate("results", params, writer, request)
 }
 
 func testChannelHandler(writer http.ResponseWriter, request *http.Request) {
 	channelIdentifier := request.FormValue("cid")
-	channels.SendToChannel(channelIdentifier, request);
+	channels.SendToChannel(channelIdentifier, request)
 }
 
 func parseTemplate(templateName string, params map[string]string, writer http.ResponseWriter, request *http.Request) {
@@ -48,7 +48,7 @@ func parseTemplate(templateName string, params map[string]string, writer http.Re
 	}
 }
 
-func loadTemplate(templateName string) (*template.Template) {
+func loadTemplate(templateName string) *template.Template {
 	filename := "web/templates/" + templateName + ".html"
 	return template.Must(template.ParseFiles(filename))
 }
