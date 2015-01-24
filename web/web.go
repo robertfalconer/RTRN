@@ -10,6 +10,7 @@ import (
 func init() {
 	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/results", resultsHandler)
+	http.HandleFunc("/test-channel", testChannelHandler)
 }
 
 func rootHandler(writer http.ResponseWriter, request *http.Request) {
@@ -27,6 +28,10 @@ func resultsHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 	params := map[string]string{"token":token}
 	parseTemplate("results", params, writer, request)
+}
+
+func testChannelHandler(writer http.ResponseWriter, request *http.Request) {
+	channels.SendToChannel(request);
 }
 
 func parseTemplate(templateName string, params map[string]string, writer http.ResponseWriter, request *http.Request) {
