@@ -1,9 +1,10 @@
 package web
 
 import (
+	"log"
 	"net/http"
-	"io/ioutil"
 	"html/template"
+	"channels"
 )
 
 func init() {
@@ -12,31 +13,36 @@ func init() {
 }
 
 func rootHandler(writer http.ResponseWriter, request *http.Request) {
-	parseTemplate("search", writer, request)
+	params := map[string]string{"":""}
+
+	parseTemplate("search", params, writer, request)
 }
 
 func resultsHandler(writer http.ResponseWriter, request *http.Request) {
-	parseTemplate("results", writer, request)
+	token, err := channels.OpenNewChannel(request);
+	log.Print(token)
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	params := map[string]string{"token":token}
+	parseTemplate("results", params, writer, request)
 }
 
-func parseTemplate(templateName string, writer http.ResponseWriter, request *http.Request) {
-	htmlTemplate, err := loadTemplate(templateName, writer)
+func parseTemplate(templateName string, params map[string]string, writer http.ResponseWriter, request *http.Request) {
+	htmlTemplate, err := loadTemplate(templateName)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusNotFound)
 		return
 	}
-	err = htmlTemplate.Execute(writer, "template")
+	err = htmlTemplate.Execute(writer, params)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-func loadTemplate(templateName string, writer http.ResponseWriter) (*template.Template, error) {
+func loadTemplate(templateName string) (*template.Template, error) {
 	filename := "web/templates/" + templateName + ".html"
-	html, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	return template.Must(template.New("template").Parse(string(html))), nil
+	return template.Must(template.ParseFiles(filename)), nil
 }
