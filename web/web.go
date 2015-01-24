@@ -35,19 +35,15 @@ func testChannelHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func parseTemplate(templateName string, params map[string]string, writer http.ResponseWriter, request *http.Request) {
-	htmlTemplate, err := loadTemplate(templateName)
-	if err != nil {
-		http.Error(writer, err.Error(), http.StatusNotFound)
-		return
-	}
-	err = htmlTemplate.Execute(writer, params)
+	htmlTemplate := loadTemplate(templateName)
+	err := htmlTemplate.Execute(writer, params)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-func loadTemplate(templateName string) (*template.Template, error) {
+func loadTemplate(templateName string) (*template.Template) {
 	filename := "web/templates/" + templateName + ".html"
-	return template.Must(template.ParseFiles(filename)), nil
+	return template.Must(template.ParseFiles(filename))
 }
