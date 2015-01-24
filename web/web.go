@@ -1,42 +1,41 @@
-package clientHandler
+package web
 
 import (
-	"fmt"
 	"net/http"
 	"io/ioutil"
 	"html/template"
 )
 
 func init() {
-	http.HandleFunc("/", handler)
-	http.HandleFunc("/results", handler)
+	http.HandleFunc("/", rootHandler)
+	http.HandleFunc("/results", resultsHandler)
 }
 
-func handler(writer http.ResponseWriter, request *http.Request) {
-	var templateName string
-	if request.URL.Path == "/" {
-		templateName = "search";
-	} else {
-		templateName = request.URL.Path[len("/"):];
-	}
+func rootHandler(writer http.ResponseWriter, request *http.Request) {
+	parseTemplate("search", writer, request)
+}
+
+func resultsHandler(writer http.ResponseWriter, request *http.Request) {
+	parseTemplate("results", writer, request)
+}
+
+func parseTemplate(templateName string, writer http.ResponseWriter, request *http.Request) {
 	htmlTemplate, err := loadTemplate(templateName, writer)
 	if err != nil {
-		fmt.Fprint(writer, "Here")
 		http.Error(writer, err.Error(), http.StatusNotFound)
+		return
 	}
 	err = htmlTemplate.Execute(writer, "template")
 	if err != nil {
-		fmt.Fprint(writer, "There")
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
 func loadTemplate(templateName string, writer http.ResponseWriter) (*template.Template, error) {
-	filename := "clientHandler/templates/" + templateName + ".html"
+	filename := "web/templates/" + templateName + ".html"
 	html, err := ioutil.ReadFile(filename)
-	fmt.Fprint(writer, "::" + string(html) + "::")
 	if err != nil {
-		fmt.Fprint(writer, "Over Here")
 		return nil, err
 	}
 	return template.Must(template.New("template").Parse(string(html))), nil
