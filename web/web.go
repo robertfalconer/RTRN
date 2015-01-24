@@ -2,7 +2,6 @@ package web
 
 import (
 	"net/http"
-	"io/ioutil"
 	"html/template"
 )
 
@@ -20,23 +19,15 @@ func resultsHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func parseTemplate(templateName string, writer http.ResponseWriter, request *http.Request) {
-	htmlTemplate, err := loadTemplate(templateName, writer)
-	if err != nil {
-		http.Error(writer, err.Error(), http.StatusNotFound)
-		return
-	}
-	err = htmlTemplate.Execute(writer, "template")
+	htmlTemplate := loadTemplate(templateName, writer)
+	err := htmlTemplate.Execute(writer, nil)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-func loadTemplate(templateName string, writer http.ResponseWriter) (*template.Template, error) {
-	filename := "web/templates/" + templateName + ".html"
-	html, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	return template.Must(template.New("template").Parse(string(html))), nil
+func loadTemplate(templateName string, writer http.ResponseWriter) (*template.Template) {
+	fileName := "web/templates/" + templateName + ".html"
+	return template.Must(template.ParseFiles(fileName))
 }
