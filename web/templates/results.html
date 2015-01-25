@@ -60,9 +60,14 @@
                         )
                 );
 
-                if ($('#images div.slick-slide').length > 10) {
+                var numberOfSlidesToKeep = 5;
+
+                if ($('#images div.slick-slide').length > numberOfSlidesToKeep) {
                     $('#images').slickRemove(0);
                     $('#thumbs').slickRemove(0);
+                }
+                else {
+                    $('#images').slickNext();
                 }
             };
             socket.onerror = function(){ console.log('channel error', arguments); };
