@@ -39,7 +39,7 @@ func testChannelHandler(writer http.ResponseWriter, request *http.Request) {
 	channels.SendToChannel(channelIdentifier, request)
 }
 
-func parseTemplate(templateName string, params map[string]string, writer http.ResponseWriter, request *http.Request) {
+func renderTemplate(templateName string, params map[string]string, writer http.ResponseWriter, request *http.Request) {
 	htmlTemplate := loadTemplate(templateName)
 	err := htmlTemplate.Execute(writer, params)
 	if err != nil {
