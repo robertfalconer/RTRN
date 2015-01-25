@@ -36,7 +36,8 @@ func resultsHandler(writer http.ResponseWriter, request *http.Request) {
 
 func testChannelHandler(writer http.ResponseWriter, request *http.Request) {
 	channelIdentifier := request.FormValue("cid")
-	channels.SendToChannel(channelIdentifier, request)
+	responseMap := map[string]string{"URL":"http://lorempixel.com/800/600/"}
+	channels.SendToChannel(channelIdentifier, responseMap, request)
 }
 
 func renderTemplate(templateName string, params map[string]string, writer http.ResponseWriter, request *http.Request) {

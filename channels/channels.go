@@ -29,9 +29,9 @@ func OpenNewChannel(request *http.Request) (string, string, error) {
 	return token, savedKeyString, err
 }
 
-func SendToChannel(channelIdentifier string, request *http.Request) error {
+func SendToChannel(channelIdentifier string, responseMap map[string]string, request *http.Request) error {
 	context := appengine.NewContext(request)
-	err := channel.SendJSON(context, channelIdentifier, []string{"Stuff", "Things"})
+	err := channel.SendJSON(context, channelIdentifier, responseMap)
 	return err
 }
 
