@@ -5,6 +5,7 @@ import (
 	"appengine/channel"
 	"code.google.com/p/go-uuid/uuid"
 	"log"
+	"net/http"
 )
 
 func OpenChannel(context appengine.Context) (string, string, error) {
@@ -14,7 +15,14 @@ func OpenChannel(context appengine.Context) (string, string, error) {
 	return token, channelId, err
 }
 
-func SendToChannel(context appengine.Context, channelId string) error {
-	err := channel.SendJSON(context, channelId, []string{"Stuff", "Things"})
+func SendToChannel(context appengine.Context, channelId string, responseData map[string]string) error {
+	err := channel.SendJSON(context, channelId, responseData)
 	return err
+}
+
+func ChannelClosed(request *http.Request) {
+	// context := appengine.NewContext(request)
+	// token := request.FormValue("from")
+	// send token to subscription package to unsubscribe
+	//
 }
