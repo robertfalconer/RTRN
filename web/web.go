@@ -1,42 +1,52 @@
 package web
 
 import (
+	"appengine"
 	"channels"
 	"html/template"
 	"log"
 	"net/http"
+	"subscription"
 )
 
 func init() {
 	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/results", resultsHandler)
 	http.HandleFunc("/test-channel", testChannelHandler)
+	http.HandleFunc("/webhook", subscription.InstagramWebhookHandler)
 }
 
 func rootHandler(writer http.ResponseWriter, request *http.Request) {
 	params := map[string]string{"": ""}
-
 	renderTemplate("search", params, writer, request)
 }
 
 func resultsHandler(writer http.ResponseWriter, request *http.Request) {
-	if request.FormValue("lat") == "" || request.FormValue("lng") == "" {
+
+	lat, lng := request.FormValue("lat"), request.FormValue("lng")
+
+	if lat == "" || lng == "" {
 		rootHandler(writer, request)
 		return
 	}
-	token, channelIdentifer, err := channels.OpenNewChannel(request)
-	log.Print(token)
+
+	context := appengine.NewContext(request)
+	token, channelId, err := channels.OpenChannel(context)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	params := map[string]string{"token": token, "channelId": channelIdentifer}
+
+	log.Printf("channel created with token %s and id %s", token, channelId)
+	subscription.Subscribe.Call(context, request.Host, channelId, lat, lng)
+	params := map[string]string{"token": token, "channelId": channelId}
 	renderTemplate("results", params, writer, request)
 }
 
 func testChannelHandler(writer http.ResponseWriter, request *http.Request) {
-	channelIdentifier := request.FormValue("cid")
-	channels.SendToChannel(channelIdentifier, request)
+	context := appengine.NewContext(request)
+	channelId := request.FormValue("cid")
+	channels.SendToChannel(context, channelId)
 }
 
 func renderTemplate(templateName string, params map[string]string, writer http.ResponseWriter, request *http.Request) {
