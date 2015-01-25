@@ -3,7 +3,6 @@ package web
 import (
 	"channels"
 	"html/template"
-	"log"
 	"net/http"
 )
 
@@ -11,6 +10,7 @@ func init() {
 	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/results", resultsHandler)
 	http.HandleFunc("/test-channel", testChannelHandler)
+	http.HandleFunc("/_ah/channel/disconnected/", disconnectChannelHandler)
 }
 
 func rootHandler(writer http.ResponseWriter, request *http.Request) {
@@ -25,7 +25,6 @@ func resultsHandler(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	token, channelIdentifer, err := channels.OpenNewChannel(request)
-	log.Print(token)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
@@ -38,6 +37,10 @@ func testChannelHandler(writer http.ResponseWriter, request *http.Request) {
 	channelIdentifier := request.FormValue("cid")
 	responseMap := map[string]string{"URL":"http://lorempixel.com/800/600/"}
 	channels.SendToChannel(channelIdentifier, responseMap, request)
+}
+
+func disconnectChannelHandler(writer http.ResponseWriter, request *http.Request) {
+	channels.ChannelClosed(request)
 }
 
 func renderTemplate(templateName string, params map[string]string, writer http.ResponseWriter, request *http.Request) {

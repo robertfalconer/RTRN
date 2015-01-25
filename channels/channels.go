@@ -29,6 +29,12 @@ func OpenNewChannel(request *http.Request) (string, string, error) {
 	return token, savedKeyString, err
 }
 
+func ChannelClosed(request *http.Request) {
+	// context := appengine.NewContext(request)
+	// token := request.FormValue("from")
+	// send token to subscription package to unsubscribe
+}
+
 func SendToChannel(channelIdentifier string, responseMap map[string]string, request *http.Request) error {
 	context := appengine.NewContext(request)
 	err := channel.SendJSON(context, channelIdentifier, responseMap)
