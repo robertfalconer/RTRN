@@ -16,7 +16,7 @@ func init() {
 func rootHandler(writer http.ResponseWriter, request *http.Request) {
 	params := map[string]string{"": ""}
 
-	parseTemplate("search", params, writer, request)
+	renderTemplate("search", params, writer, request)
 }
 
 func resultsHandler(writer http.ResponseWriter, request *http.Request) {
@@ -31,7 +31,7 @@ func resultsHandler(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	params := map[string]string{"token": token, "channelId": channelIdentifer}
-	parseTemplate("results", params, writer, request)
+	renderTemplate("results", params, writer, request)
 }
 
 func testChannelHandler(writer http.ResponseWriter, request *http.Request) {
@@ -39,7 +39,7 @@ func testChannelHandler(writer http.ResponseWriter, request *http.Request) {
 	channels.SendToChannel(channelIdentifier, request)
 }
 
-func parseTemplate(templateName string, params map[string]string, writer http.ResponseWriter, request *http.Request) {
+func renderTemplate(templateName string, params map[string]string, writer http.ResponseWriter, request *http.Request) {
 	htmlTemplate := loadTemplate(templateName)
 	err := htmlTemplate.Execute(writer, params)
 	if err != nil {
