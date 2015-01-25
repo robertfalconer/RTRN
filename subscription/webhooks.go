@@ -1,6 +1,7 @@
 package subscription
 
 import (
+	"appengine"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -36,8 +37,14 @@ func InstagramWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println("json unmarshalling failed with error", err)
 			log.Println(string(body))
-		} else {
-			log.Println("message:", message)
+			return
+		}
+
+		log.Println("received update message from Instagram, message=", message)
+
+		context := appengine.NewContext(r)
+		for _, update := range message {
+			FetchRecentMedia.Call(context, fmt.Sprintf("%d", update.SubscriptionId), update.ObjectId)
 		}
 	}
 }

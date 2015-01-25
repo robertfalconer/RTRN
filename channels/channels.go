@@ -15,8 +15,8 @@ func OpenChannel(context appengine.Context) (string, string, error) {
 	return token, channelId, err
 }
 
-func SendToChannel(context appengine.Context, channelId string, responseData map[string]string) error {
-	err := channel.SendJSON(context, channelId, responseData)
+func SendToChannel(context appengine.Context, channelId string, data string) error {
+	err := channel.SendJSON(context, channelId, data)
 	return err
 }
 

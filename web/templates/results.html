@@ -42,21 +42,23 @@
             socket.onopen = function(){ console.log("channel open", arguments); };
             socket.onmessage = function(reponse)
             {
-                var responseObject = JSON.parse(reponse.data);
+                var responseObject = JSON.parse(reponse.data);  
                 var time = new Date().getTime();
+
+                console.log(responseObject)
 
                 $('#images').slickAdd
                 (
                         $('<div />').append
                         (
-                                $('<img />').attr('class', 'image').attr('src', responseObject.URL + "?t=" + time)
+                                $('<img />').attr('class', 'image').attr('src', responseObject.images.standard_resolution.url + "?t=" + time)
                         )
                 );
                 $('#thumbs').slickAdd
                 (
                         $('<div />').append
                         (
-                                $('<img />').attr('class', 'thumb').attr('src', responseObject.URL + "?t=" + time)
+                                $('<img />').attr('class', 'thumb').attr('src', responseObject.images.thumbnail.url + "?t=" + time)
                         )
                 );
 

@@ -12,7 +12,7 @@ import (
 func init() {
 	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/results", resultsHandler)
-	http.HandleFunc("/test-channel", testChannelHandler)
+	// http.HandleFunc("/test-channel", testChannelHandler)
 	http.HandleFunc("/_ah/channel/disconnected/", disconnectChannelHandler)
 	http.HandleFunc("/webhook", subscription.InstagramWebhookHandler)
 }
@@ -44,12 +44,12 @@ func resultsHandler(writer http.ResponseWriter, request *http.Request) {
 	renderTemplate("results", params, writer, request)
 }
 
-func testChannelHandler(writer http.ResponseWriter, request *http.Request) {
-	context := appengine.NewContext(request)
-	channelId := request.FormValue("cid")
-	responseMap := map[string]string{"URL":"http://lorempixel.com/800/600/"}
-	channels.SendToChannel(context, channelId, responseMap)
-}
+// func testChannelHandler(writer http.ResponseWriter, request *http.Request) {
+// 	context := appengine.NewContext(request)
+// 	channelId := request.FormValue("cid")
+// 	responseMap := map[string]string{"URL":"http://lorempixel.com/800/600/"}
+// 	channels.SendToChannel(context, channelId, responseMap)
+// }
 
 func disconnectChannelHandler(writer http.ResponseWriter, request *http.Request) {
 	channels.ChannelClosed(request)
