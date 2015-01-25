@@ -16,7 +16,7 @@ type InstagramSubscriptionUpdate struct {
 	Time           int    `json:"time"`
 }
 
-func InstagramWebhook(w http.ResponseWriter, r *http.Request) {
+func InstagramWebhookHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
 		log.Println("received instagram subscription challenge")
@@ -40,5 +40,4 @@ func InstagramWebhook(w http.ResponseWriter, r *http.Request) {
 			log.Println("message:", message)
 		}
 	}
-
 }
